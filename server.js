@@ -39,7 +39,7 @@ function pullCustomerUsage(asset){
   try{
     console.log("Assets in pullCustomerUsage  "+JSON.stringify(asset));
     console.log("Contact Schema  "+JSON.stringify(asset.schema_name__c));
-    const contacts = db.query("SELECT count(*) FROM daltile.contact");
+    const contacts = db.query("SELECT sfid FROM daltile.contact");
     //const leads = db.query("SELECT sfid FROM "+asset.schema_name__c+".lead");
     //const subscriptions = db.query("SELECT * FROM "+asset.schema_name__c+".ncpc__pc_subscription__c");
     //const interests = db.query("SELECT sfid FROM "+asset.schema_name__c+".ncpc__pc_interest__c");
