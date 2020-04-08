@@ -90,11 +90,11 @@ const updateAssetUsage = async function (asset, totalUsage){
   var today = dateFormat(new Date(), "yyyy-mm-dd");
   //var externalKey = asset.ncpc__external_id__c === '' ? uuidv1() : asset.ncpc__external_id__c;
   try{
-    const result = db.query(
+    const updateAsset = db.query(
       "UPDATE horizontal.asset SET current_volume__c=$1, usage_updated_date__c=$2 WHERE sfid=$3 RETURNING *",
       [totalUsage, today, asset.sfid]
     );
-    console.log("Update Asset: "+JSON.stringify(result.rows));
+    console.log("Update Asset: "+JSON.stringify(updateAsset));
   }catch(err){
     console.log("Error  "+JSON.stringify(err));
   } 
