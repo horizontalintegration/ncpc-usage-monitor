@@ -28,19 +28,19 @@ const pullCustomerUsage = async function (asset) {
       const subsCheck = await db.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = '"+asset.schema_name__c+"' AND table_name = 'ncpc__pc_subscription__c')");
       const intsCheck = await db.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = '"+asset.schema_name__c+"' AND table_name = 'ncpc__pc_interest__c')");
       
-      if(contactCheck.rows[0].exists == 'true'){
+      if(contactCheck.rows[0].exists == true){
         const contacts = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_subscription__c");
       }
-      if(leadCheck.rows[0].exists == 'true'){
+      if(leadCheck.rows[0].exists == true){
         const leads = db.query("SELECT sfid FROM "+asset.schema_name__c+".lead");
       }
-      if(campaignCheck.rows[0].exists == 'true'){
+      if(campaignCheck.rows[0].exists == true){
         const campaignmembers = db.query("SELECT sfid FROM "+asset.schema_name__c+".campaignmember");
       }
-      if(subsCheck.rows[0].exists == 'true'){
+      if(subsCheck.rows[0].exists == true){
         const subscriptions = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_subscription__c");
       }
-      if(intsCheck.rows[0].exists == 'true'){
+      if(intsCheck.rows[0].exists == true){
         const interests = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_interest__c");
       }
   
