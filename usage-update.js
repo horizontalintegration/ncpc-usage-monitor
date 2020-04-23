@@ -17,11 +17,11 @@ const pullCustomerUsage = async function (asset) {
     try{
       console.log("Assets in pullCustomerUsage  "+JSON.stringify(asset));
       console.log("Contact Schema  "+JSON.stringify(asset.schema_name__c));
-      const contacts = {"rows": [{"count":"0"}]};
+      /*const contacts = {"rows": [{"count":"0"}]};
       const leads = {"rows": [{"count":"0"}]};
       const campaignmembers = {"rows": [{"count":"0"}]};
       const subscriptions = {"rows": [{"count":"0"}]};
-      const interests = {"rows": [{"count":"0"}]};
+      const interests = {"rows": [{"count":"0"}]};*/
       const contactCheck = await db.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = '"+asset.schema_name__c+"' AND table_name = 'contact')");
       const leadCheck = await db.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = '"+asset.schema_name__c+"' AND table_name = 'lead')");
       const campaignCheck = await db.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = '"+asset.schema_name__c+"' AND table_name = 'campaignmember')");
