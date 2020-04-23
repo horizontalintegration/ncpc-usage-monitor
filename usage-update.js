@@ -10,6 +10,7 @@ const getAssetRecords = async function (){
           for(var i=0; i<asset.rows.length; i++){
             pullCustomerUsage(asset.rows[i]);
           }
+          response.send('Updates Made.');
       }
 }
 
@@ -52,7 +53,6 @@ const pullCustomerUsage = async function (asset) {
           );
           if(result.rows){updateAssetUsage(asset, totalUsage);}
       }else{
-          console.log("Inside insert");
           const result = await db.query(
             "INSERT INTO ncpc_usage.customer_usage (sfid,name,subscription_table,interest_table,contact_table,lead_table,campaignmember_table,total_usage) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *",
             [asset.sfid, asset.schema_name__c, Number(subscriptions.rows[0].count), Number(interests.rows[0].count), Number(contacts.rows[0].count), Number(leads.rows[0].count), Number(campaignmembers.rows[0].count), totalUsage]
@@ -65,14 +65,14 @@ const pullCustomerUsage = async function (asset) {
   }
   
   const updateAssetUsage = async function (asset, totalUsage){
+    console.log("Will update "+JSON.stringify(asset.schema_name__c)+" to "+JSON.stringify(totalUsage));
     var today = dateFormat(new Date(), "yyyy-mm-dd");
-    //var externalKey = asset.ncpc__external_id__c === '' ? uuidv1() : asset.ncpc__external_id__c;
     try{
       const result = db.query(
         "UPDATE horizontal.asset SET current_volume__c=$1, usage_updated_date__c=$2 WHERE sfid=$3 RETURNING *",
         [totalUsage, today, asset.sfid]
       );
-      console.log("Update Asset: "+JSON.stringify(result.rows));
+      console.log("Update Asset: "+JSON.stringify(result.rows[0]));
     }catch(err){
       console.log("Error  "+JSON.stringify(err));
     } 
