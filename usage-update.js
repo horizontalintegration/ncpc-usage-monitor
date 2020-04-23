@@ -11,7 +11,9 @@ const getAssetRecords = async function (){
             pullCustomerUsage(asset.rows[i]);
           }
           console.log("All updates made.");
-          process.exit()
+          setTimeout((function() {
+              return process.exit(22);
+          }), 15000);
       }
 }
 
