@@ -10,7 +10,8 @@ const getAssetRecords = async function (){
           for(var i=0; i<asset.rows.length; i++){
             pullCustomerUsage(asset.rows[i]);
           }
-          response.send('Updates Made.');
+          console.log("All updates made.");
+          process.exit()
       }
 }
 
@@ -72,7 +73,6 @@ const pullCustomerUsage = async function (asset) {
         "UPDATE horizontal.asset SET current_volume__c=$1, usage_updated_date__c=$2 WHERE sfid=$3 RETURNING *",
         [totalUsage, today, asset.sfid]
       );
-      console.log("Update Asset: "+JSON.stringify(result.rows[0]));
     }catch(err){
       console.log("Error  "+JSON.stringify(err));
     } 
