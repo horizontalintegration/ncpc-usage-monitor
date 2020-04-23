@@ -19,8 +19,8 @@ const getAssetRecords = async function (){
 
 const pullCustomerUsage = async function (asset) {
     try{
-      console.log("Assets in pullCustomerUsage  "+JSON.stringify(asset));
-      console.log("Contact Schema  "+JSON.stringify(asset.schema_name__c));
+      //console.log("Assets in pullCustomerUsage  "+JSON.stringify(asset));
+      //console.log("Contact Schema  "+JSON.stringify(asset.schema_name__c));
       /*const contacts = {"rows": [{"count":"0"}]};
       const leads = {"rows": [{"count":"0"}]};
       const campaignmembers = {"rows": [{"count":"0"}]};
@@ -42,14 +42,13 @@ const pullCustomerUsage = async function (asset) {
       
         const interests = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_interest__c");
       
-      console.log("Subscriptions Count - "+asset.schema_name__c+" - "+JSON.stringify(subscriptions.rows[0].count));
+      //console.log("Subscriptions Count - "+asset.schema_name__c+" - "+JSON.stringify(subscriptions.rows[0].count));
   
       const totalUsage = Number(subscriptions.rows[0].count) + Number(interests.rows[0].count) + Number(contacts.rows[0].count) + Number(leads.rows[0].count) + Number(campaignmembers.rows[0].count);
       console.log("Total Usage "+JSON.stringify(totalUsage));
   
       const record = await db.query("SELECT * FROM ncpc_usage.customer_usage WHERE sfid = '"+asset.sfid+"'");
       if(record.rows.length > 0){
-          console.log("Inside update");
           const result = await db.query(
               "UPDATE ncpc_usage.customer_usage SET total_usage=$7, contact_table=$1, lead_table=$2, subscription_table=$3, interest_table=$4, campaignmember_table=$5 WHERE sfid=$6 RETURNING *",
               [contacts.rows[0].count, leads.rows[0].count, subscriptions.rows[0].count, interests.rows[0].count, campaignmembers.rows[0].count, asset.sfid, totalUsage]
