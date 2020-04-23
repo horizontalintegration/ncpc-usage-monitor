@@ -21,25 +21,23 @@ const pullCustomerUsage = async function (asset) {
       const leads = {"rows": [{"count":"0"}]};
       const campaignmembers = {"rows": [{"count":"0"}]};
       const subscriptions = {"rows": [{"count":"0"}]};
-      const interests = {"rows": [{"count":"0"}]};*/
+      const interests = {"rows": [{"count":"0"}]};
       const contactCheck = await db.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = '"+asset.schema_name__c+"' AND table_name = 'contact')");
       const leadCheck = await db.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = '"+asset.schema_name__c+"' AND table_name = 'lead')");
       const campaignCheck = await db.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = '"+asset.schema_name__c+"' AND table_name = 'campaignmember')");
       const subsCheck = await db.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = '"+asset.schema_name__c+"' AND table_name = 'ncpc__pc_subscription__c')");
       const intsCheck = await db.query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = '"+asset.schema_name__c+"' AND table_name = 'ncpc__pc_interest__c')");
-      
+      */
         const contacts = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".contact");
       
-        const leads = db.query("SELECT count(*) FROM "+asset.schema_name__c+".lead");
+        const leads = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".lead");
       
-        const campaignmembers = db.query("SELECT count(*) FROM "+asset.schema_name__c+".campaignmember");
+        const campaignmembers = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".campaignmember");
       
         const subscriptions = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_subscription__c");
       
         const interests = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_interest__c");
       
-  
-      console.log("Subscriptions - "+asset.schema_name__c+" - "+JSON.stringify(subscriptions.rows));
       console.log("Subscriptions Count - "+asset.schema_name__c+" - "+JSON.stringify(subscriptions.rows[0].count));
   
       const totalUsage = Number(subscriptions.rows[0].count) + Number(interests.rows[0].count) + Number(contacts.rows[0].count) + Number(leads.rows[0].count) + Number(campaignmembers.rows[0].count);
