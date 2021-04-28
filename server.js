@@ -4,7 +4,7 @@ const express = require('express');
 // const path = require('path');
 const dateFormat = require('dateformat');
 const bodyParser = require('body-parser');
-const db = require('./db/test');
+const db = require('./db');
 //const db = require('./db');
 
 const app = express();
@@ -20,8 +20,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/', async function(req, res, next) {
   try {
     console.log("test");
-    console.log(JSON.stringify(db.internaldb));
-    const asset = await db.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
+    var dbConn = db.internaldb();
+    console.log(JSON.stringify(dbConn));
+    const asset = await dbConn.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
     console.log("Asset "+JSON.stringify(asset.rows));
 
       if (asset.rows.length > 0) {
