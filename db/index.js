@@ -21,6 +21,6 @@ function proddb(db_url){
 }
 
 module.exports = {
-  internaldb,
-  proddb
+  internaldb: _internal,
+  proddb: _prod,
 };
