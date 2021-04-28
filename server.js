@@ -20,9 +20,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/', async function(req, res, next) {
   try {
     var dbConn = db.internaldb();
-    console.log(JSON.stringify(dbConn));
+    console.log("dbConn" + JSON.stringify(dbConn));
     const asset = await dbConn.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
-    console.log("Asset "+JSON.stringify(asset.rows));
+    console.log("Asset "+JSON.stringify(asset));
 
       if (asset.rows.length > 0) {
           for(var i=0; i<asset.rows.length; i++){
