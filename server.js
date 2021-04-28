@@ -4,7 +4,7 @@ const express = require('express');
 // const path = require('path');
 const dateFormat = require('dateformat');
 const bodyParser = require('body-parser');
-const db = require('./db/test.js');
+const db = require('./db/test');
 //const db = require('./db');
 
 const app = express();
