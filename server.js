@@ -19,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/', async function(req, res, next) {
   try {
     console.log("test");
+    console.log(db.internaldb);
     const asset = await db.internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
     console.log("Asset "+JSON.stringify(asset.rows));
 
