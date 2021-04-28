@@ -19,7 +19,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', async function(req, res, next) {
   try {
-    console.log("test");
     var dbConn = db.internaldb();
     console.log(JSON.stringify(dbConn));
     const asset = await dbConn.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
@@ -69,6 +68,7 @@ app.get('/', async function(req, res, next) {
       res.status(200).send(asset.rows);
 
   } catch (err) {
+    console.log(err);
     res.status(err.status || 500).send(err);
   }
 })
