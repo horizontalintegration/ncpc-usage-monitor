@@ -8,11 +8,13 @@ function internaldb(){
   });
 
   client.connect();
+
+  return client;
 }
 
 function proddb(db_url){
   const client = new Client({
-    connectionString: process.env + db_url,
+    connectionString: db_url,
     ssl: true
   });
 
