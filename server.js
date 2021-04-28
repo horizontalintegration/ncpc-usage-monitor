@@ -20,7 +20,7 @@ app.get('/', async function(req, res, next) {
   try {
     console.log("test");
     console.log(JSON.stringify(db.internaldb));
-    const asset = await db.internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
+    const asset = await db.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
     console.log("Asset "+JSON.stringify(asset.rows));
 
       if (asset.rows.length > 0) {
