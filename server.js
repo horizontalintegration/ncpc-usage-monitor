@@ -21,10 +21,13 @@ app.get('/', async function(req, res, next) {
   try {
     //var dbConn = db.internaldb;
     //console.log("dbConn " + JSON.stringify(dbConn));
-    const internaldb = new Client({
+    const options = {
       connectionString: process.env.DATABASE_URL,
-      ssl: true
-    });
+    };
+    if (process.env.DATABASE_SSL === undefined || process.env.DATABASE_SSL.toLowerCase() === 'true') {
+      options.ssl = true;
+    }
+    const internaldb = new Client(options);
     
     internaldb
     .connect()
