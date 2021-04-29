@@ -22,15 +22,11 @@ app.get('/', async function(req, res, next) {
     //var dbConn = db.internaldb;
     //console.log("dbConn " + JSON.stringify(dbConn));
 
-    //console.log(internaldb);
-
-    console.log(test);
-
     const asset = `
       SELECT * 
       FROM horizontal.asset 
       WHERE active__c = 'True'
-      `;
+    `;
     const results_asset = await db.query(asset);  
     console.log("Asset "+JSON.stringify(results_asset));
 
