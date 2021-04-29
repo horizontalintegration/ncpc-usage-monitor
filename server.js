@@ -5,7 +5,6 @@ const express = require('express');
 const dateFormat = require('dateformat');
 const bodyParser = require('body-parser');
 const db = require('./db');
-const { Client } = require('pg');
 
 const app = express();
 
@@ -24,7 +23,8 @@ app.get('/', async function(req, res, next) {
 
     const asset = `
       SELECT * 
-      FROM public.customer 
+      FROM horizontal.asset 
+      WHERE active__c = 'True'
     `;
     console.log("db var ",db);
     const results_asset = await db.query(asset);  
