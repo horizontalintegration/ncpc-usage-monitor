@@ -6,7 +6,10 @@ function internaldb(){
     ssl: true
   });
 
-  client.connect();
+  client
+  .connect()
+  .then(() => console.log('PostgreSQL Connected'))
+  .catch((err) => console.error('PostgreSQL Connection Error', err.stack));
 
   return client;
 }
