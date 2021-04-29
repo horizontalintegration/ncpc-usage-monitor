@@ -27,6 +27,7 @@ app.get('/', async function(req, res, next) {
       FROM horizontal.asset 
       WHERE active__c = 'True'
     `;
+    console.log("db var ",db);
     const results_asset = await db.query(asset);  
     console.log("Asset "+JSON.stringify(results_asset));
 
