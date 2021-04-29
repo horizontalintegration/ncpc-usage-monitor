@@ -24,8 +24,7 @@ app.get('/', async function(req, res, next) {
 
     const asset = `
       SELECT * 
-      FROM horizontal.asset 
-      WHERE active__c = 'True'
+      FROM public.customer 
     `;
     console.log("db var ",db);
     const results_asset = await db.query(asset);  
