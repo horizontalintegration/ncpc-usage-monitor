@@ -19,9 +19,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', async function(req, res, next) {
   try {
-    var dbConn = db.internaldb;
-    console.log("dbConn " + JSON.stringify(dbConn));
-    const asset = await dbConn.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
+    //var dbConn = db.internaldb;
+    //console.log("dbConn " + JSON.stringify(dbConn));
+    const internaldb = new Client({
+      connectionString: process.env.DATABASE_URL,
+      ssl: true
+    });
+    
+    internaldb
+    .connect()
+    .then(() => console.log('PostgreSQL Connected'))
+    .catch((err) => console.error('PostgreSQL Connection Error', err.stack));
+
+    const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
     console.log("Asset "+JSON.stringify(asset));
 
       if (asset.rows.length > 0) {
