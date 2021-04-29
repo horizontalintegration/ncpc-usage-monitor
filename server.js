@@ -16,8 +16,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.static(__dirname + '/public'));
 
 
-app.get('/', async function(req, res, next) {
+app.get('/', checkUserAuth, async function(req, res, next) {
   try {
+    function checkUserAuth(req, res, next) {
+      if (req.session.user) return next();
+      return next(new NotAuthorizedError());
+    }
     //var dbConn = db.internaldb;
     //console.log("dbConn " + JSON.stringify(dbConn));
 
