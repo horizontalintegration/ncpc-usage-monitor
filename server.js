@@ -28,9 +28,9 @@ app.get('/', async function(req, res, next) {
     if (process.env.DATABASE_SSL === undefined || process.env.DATABASE_SSL.toLowerCase() === 'true') {
       options.ssl = true;
     }
-    const internaldb = new Client(options);
+    const client = new Client(options);
     
-    internaldb
+    client
     .connect()
     .then(() => console.log('PostgreSQL Connected'))
     .catch((err) => console.error('PostgreSQL Connection Error', err.stack));
@@ -45,14 +45,14 @@ app.get('/', async function(req, res, next) {
       });
   });
 
-    const test = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'", (err, res) => {
+    const test = await client.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'", (err, res) => {
       console.log(err, res)
-      internaldb.end()
+      client.end()
     })
 
     console.log(test);
 
-    const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
+    const asset = await client.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
     console.log("Asset "+JSON.stringify(asset));
 
       if (asset.rows.length > 0) {
