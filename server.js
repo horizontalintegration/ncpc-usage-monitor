@@ -21,6 +21,10 @@ app.get('/', async function(req, res, next) {
   try {
     //var dbConn = db.internaldb;
     //console.log("dbConn " + JSON.stringify(dbConn));
+    pool.query('SELECT NOW()', (err, res) => {
+      console.log(err, res)
+      pool.end()
+    })
 
     const asset = `
       SELECT * 
