@@ -1,17 +1,17 @@
 const { Client } = require('pg');
 
 
-const internaldb = new Client({
+const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: true
 });
 
-internaldb
+client
 .connect()
 .then(() => console.log('PostgreSQL Connected'))
 .catch((err) => console.error('PostgreSQL Connection Error', err.stack));
 
-
+/*
 function proddb(db_url){
   const client = new Client({
     connectionString: db_url,
@@ -25,4 +25,6 @@ function proddb(db_url){
 
 module.exports = {
   internaldb
-};
+};*/
+
+module.exports = client;

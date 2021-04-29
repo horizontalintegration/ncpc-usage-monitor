@@ -21,41 +21,20 @@ app.get('/', async function(req, res, next) {
   try {
     //var dbConn = db.internaldb;
     //console.log("dbConn " + JSON.stringify(dbConn));
-    const options = {
-      connectionString: process.env.DATABASE_URL,
-    };
-    console.log(process.env.DATABASE_URL);
-    if (process.env.DATABASE_SSL === undefined || process.env.DATABASE_SSL.toLowerCase() === 'true') {
-      options.ssl = true;
-    }
-    const client = new Client(options);
-    
-    client
-    .connect()
-    .then(() => console.log('PostgreSQL Connected'))
-    .catch((err) => console.error('PostgreSQL Connection Error', err.stack));
 
     //console.log(internaldb);
 
-    await new Promise(resolve => {
-      client.query('SELECT NOW()', (err, results) => {
-          console.log({ err, results });
-          console.log(new Error().stack);
-          resolve();
-      });
-  });
-
-    const test = await client.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'", (err, res) => {
-      console.log(err, res)
-      client.end()
-    })
-
     console.log(test);
 
-    const asset = await client.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
-    console.log("Asset "+JSON.stringify(asset));
+    const asset = `
+      SELECT * 
+      FROM horizontal.asset 
+      WHERE active__c = 'True'
+      `;
+    const results_asset = await db.query(asset);  
+    console.log("Asset "+JSON.stringify(results_asset));
 
-      if (asset.rows.length > 0) {
+      /*if (asset.rows.length > 0) {
           for(var i=0; i<asset.rows.length; i++){
             var customerId;
             const customerRecord = `
@@ -94,9 +73,9 @@ app.get('/', async function(req, res, next) {
           setTimeout((function() {
               return process.exit(22);
           }), 15000);
-      }
+      }*/
 
-      res.status(200).send(asset.rows);
+      res.status(200).send();
 
   } catch (err) {
     console.log(err);
