@@ -18,9 +18,11 @@ function proddb(db_url){
   });
 
   client.connect();
+
+  return client;
 }
 
 module.exports = {
-  internaldb: internaldb,
-  proddb: internaldb,
+  internaldb,
+  proddb,
 };
