@@ -3,13 +3,12 @@ const { Client } = require('pg');
 
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
-  ssl: true
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-client
-.connect()
-.then(() => console.log('PostgreSQL Connected'))
-.catch((err) => console.error('PostgreSQL Connection Error', err.stack));
+client.connect();
 
 /*
 function proddb(db_url){
