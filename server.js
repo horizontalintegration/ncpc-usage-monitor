@@ -34,6 +34,11 @@ app.get('/', async function(req, res, next) {
     .then(() => console.log('PostgreSQL Connected'))
     .catch((err) => console.error('PostgreSQL Connection Error', err.stack));
 
+    internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'", (err, res) => {
+      console.log(err, res)
+      client.end()
+    })
+
     const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
     console.log("Asset "+JSON.stringify(asset));
 
