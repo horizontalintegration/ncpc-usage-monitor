@@ -15,23 +15,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.static(__dirname + '/public'));
 
-function checkUserAuth(req, res, next) {
-  if (req.session.user) return next();
-  return next(new NotAuthorizedError());
-}
-
-app.get('/', checkUserAuth, async function(req, res, next) {
+app.get('/', async function(req, res, next) {
   try {
     //var dbConn = db.internaldb;
     //console.log("dbConn " + JSON.stringify(dbConn));
 
-    const asset = `
-      SELECT * 
-      FROM ncpc_usage.customer_usage 
-    `;
+    const asset = await db.query("SELECT sfid,schema_name__c FROM horizontal.asset WHERE status = 'Installed' AND active__c = 'True'");
+      console.log("Asset "+JSON.stringify(asset.rows));
+
     console.log("db var ",db);
-    const results_asset = await db.query(asset);  
-    console.log("Asset "+JSON.stringify(results_asset));
 
       /*if (asset.rows.length > 0) {
           for(var i=0; i<asset.rows.length; i++){
@@ -73,8 +65,6 @@ app.get('/', checkUserAuth, async function(req, res, next) {
               return process.exit(22);
           }), 15000);
       }*/
-
-      res.status(200).send();
 
   } catch (err) {
     console.log(err);
