@@ -20,8 +20,8 @@ app.get('/', async function(req, res, next) {
     //var dbConn = db.internaldb;
     //console.log("dbConn " + JSON.stringify(dbConn));
 
-    const asset = await db.query("SELECT sfid,schema_name__c FROM horizontal.asset WHERE status = 'Installed' AND active__c = 'True'");
-      console.log("Asset "+JSON.stringify(asset.rows));
+    const asset = await db.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
+    console.log("Asset "+JSON.stringify(asset.rows));
 
     console.log("db var ",db);
 
