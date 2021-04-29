@@ -35,7 +35,15 @@ app.get('/', async function(req, res, next) {
     .then(() => console.log('PostgreSQL Connected'))
     .catch((err) => console.error('PostgreSQL Connection Error', err.stack));
 
-    console.log(internaldb);
+    //console.log(internaldb);
+
+    await new Promise(resolve => {
+      client.query('SELECT NOW()', (err, results) => {
+          console.log({ err, results });
+          console.log(new Error().stack);
+          resolve();
+      });
+  });
 
     const test = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'", (err, res) => {
       console.log(err, res)
