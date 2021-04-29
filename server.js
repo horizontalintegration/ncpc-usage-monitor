@@ -37,9 +37,9 @@ app.get('/', async function(req, res, next) {
 
     console.log(internaldb);
 
-    const test = internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'", (err, res) => {
+    const test = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'", (err, res) => {
       console.log(err, res)
-      client.end()
+      internaldb.end()
     })
 
     console.log(test);
