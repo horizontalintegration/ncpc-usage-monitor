@@ -1,12 +1,15 @@
 const { Client } = require('pg');
 
 
-const client = new Client({
-  connectionString: process.env.HEROKU_POSTGRESQL_ORANGE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
+const options = {
+  connectionString: process.env.DATABASE_URL,
+};
+
+if (process.env.DATABASE_SSL === undefined || process.env.DATABASE_SSL.toLowerCase() === 'true') {
+  options.ssl = true;
+}
+
+const client = new Client(options);
 
 client.connect();
 
