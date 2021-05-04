@@ -151,7 +151,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
             `;
       const results_snapshot = await internaldb.query(query_snapshot);
 
-      if(results_snapshot.rows <= 1){
+      if(results_snapshot.rows < 1){
         const query_insertSnapshot = `
             INSERT INTO 
             public.customer_usage_snapshot (
@@ -185,7 +185,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
         if(results_insertSnapshot){return true};
       }else{
-        console.log("Snapshot record not created, record already existing for customer and date.")
+        console.log("Snapshot record not created, record already existing for customer and date.");
+        return true;
       }
     }catch(err){
       console.log("Error in insertCustomerUsageSnapshot: "+JSON.stringify(err));
