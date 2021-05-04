@@ -13,7 +13,7 @@ const getAssetRecords = async function (){
 
       if (asset.rows.length > 0) {
           for(var i=0; i<asset.rows.length; i++){
-            var customerId;
+            let customerId;
             const customerRecord = `
               SELECT *
               FROM public.customer
@@ -22,7 +22,7 @@ const getAssetRecords = async function (){
             const results_customerRecord = await internaldb.query(customerRecord);
             console.log("results_customerRecord: ", results_customerRecord)
 
-            let customerId = results_customerRecord.rows[i].id;
+            customerId = results_customerRecord.rows[0].id;
             console.log("customerId: ", customerId);
 
             if(results_customerRecord.rows.length == 0){
