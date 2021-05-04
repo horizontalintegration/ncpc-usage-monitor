@@ -1,4 +1,5 @@
 //const db = require("./db");
+const { Client } = require('pg');
 const internaldb = require("./db/internal");
 const dateFormat = require('dateformat');
 
@@ -45,7 +46,7 @@ const getAssetRecords = async function (){
             }
 
             if(customerId){
-              pullCustomerUsage(asset.rows[i], customerId);
+              pullCustomerUsage(asset.rows[i], results_customerRecord.dbUrl, customerId);
             }
           }
           console.log("All updates made.");
@@ -58,13 +59,11 @@ const getAssetRecords = async function (){
   }
 }
 
-const pullCustomerUsage = async function (asset, customerId) {
+const pullCustomerUsage = async function (asset, dbUrl, customerId) {
     try{
-      const { Client } = require('pg');
-
       let connString;
-      if (customerDetails.dbUrl in process.env) {
-        connString = process.env[customerDetails.dbUrl];
+      if (dbUrl in process.env) {
+        connString = process.env[dbUrl];
       }
 
       const options = {
