@@ -94,13 +94,13 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       console.log("Total Usage "+JSON.stringify(totalUsage));
 
       const tableValues = {
-        "contacts": Number(contacts.rows[0].count), 
-        "leads": Number(contacts.rows[0].count),
-        "campaignmembers": Number(campaignmembers.rows[0].count),
-        "subscriptions": Number(subscriptions.rows[0].count),
-        "summary": Number(summary.rows[0].count),
-        "result": Number(results.rows[0].count),
-        "total": totalUsage
+        contacts: Number(contacts.rows[0].count), 
+        leads: Number(contacts.rows[0].count),
+        campaignmembers: Number(campaignmembers.rows[0].count),
+        subscriptions: Number(subscriptions.rows[0].count),
+        summary: Number(summary.rows[0].count),
+        result: Number(results.rows[0].count),
+        total: totalUsage
       };
 
       console.log("TableValues: ", tableValues);
