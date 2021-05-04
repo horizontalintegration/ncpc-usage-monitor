@@ -115,6 +115,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
   
   const updateCustomerUsage = async function (asset, tableValues){
     try{
+      var today = dateFormat(new Date(), "yyyy-mm-dd");
       const query_customerUsage = `
           UPDATE public.customer_usage SET 
             "contact_table"=$1, 
@@ -124,11 +125,12 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
             "campaignmember_table"=$5, 
             "summary_table"=$6, 
             "result_table"=$7, 
-            "total_usage"=$8 
-          WHERE "sfid"=$9
+            "total_usage"=$8,
+            "lastUpdatedDate"=$9 
+          WHERE "sfid"=$10
       `;
       
-      const queryparams = [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, asset.sfid];    
+      const queryparams = [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, today, asset.sfid];    
       const results_customerUsage = await internaldb.query(query_customerUsage,queryparams);
       if (DEBUG === 'true'){console.log("results_customerUsage: ",results_customerUsage)}
 
@@ -168,7 +170,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
               "campaignmember_table",
               "summary_table",
               "result_table",
-              "total_usage")
+              "total_usage",
+              "createddate")
             VALUES 
               (
               '${asset.sfid}', 
@@ -180,7 +183,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
               '${tableValues.campaignmembers}', 
               '${tableValues.summary}', 
               '${tableValues.result}', 
-              '${tableValues.total}'
+              '${tableValues.total}',
+              '${today}'
               )
           `;
         const results_insertSnapshot = await internaldb.query(query_insertSnapshot);
@@ -200,13 +204,16 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
   const updateAssetUsage = async function (asset, tableValues){
     try{
-      var today2 = dateFormat(new Date(), "yyyy-mm-dd");
+      var today = dateFormat(new Date(), "yyyy-mm-dd");
 
-      const update_asset = internaldb.query(
-        "UPDATE horizontal.asset SET current_volume__c=$1, usage_updated_date__c=$2 WHERE sfid=$3 RETURNING *",
-        [tableValues.total, today2, asset.sfid]
-      );
-      const results_asset = await internaldb.query(update_asset);  
+      const update_asset = `
+        UPDATE horizontal.asset SET 
+          current_volume__c=$1, 
+          usage_updated_date__c=$2 
+          WHERE sfid=$3 RETURNING *
+        `;
+      const queryparams = [tableValues.total, today, asset.sfid];    
+      const results_asset = await internaldb.query(update_asset,queryparams);
       if (DEBUG === 'true'){console.log("results_asset: ",results_asset)}
 
       console.log("Update successful for asset record for ",asset.sfid);
