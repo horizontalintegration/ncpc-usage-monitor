@@ -2,6 +2,7 @@
 const { Client } = require('pg');
 const internaldb = require("./db/internal");
 const dateFormat = require('dateformat');
+const DEBUG = true;
 
 
 const getAssetRecords = async function (){
@@ -40,9 +41,10 @@ const getAssetRecords = async function (){
             }
 
             if(customerId){
-              pullCustomerUsage(asset.rows[i], results_customerRecord.dbUrl, customerId);
+              const pullCustomer = pullCustomerUsage(asset.rows[i], results_customerRecord.dbUrl, customerId);
+              if (DEBUG === 'true'){console.log("pullCustomer: ",pullCustomer)}
 
-              if(pullCustomerUsage){return true};
+              if(pullCustomer){return true};
             }
           }
           console.log("All updates made.");
@@ -128,6 +130,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       
       const queryparams = [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, asset.sfid];    
       const results_customerUsage = await internaldb.query(query_customerUsage,queryparams);
+      if (DEBUG === 'true'){console.log("results_customerUsage: ",results_customerUsage)}
 
       console.log("Update successful for customer_usage record for ",asset.sfid);
 
@@ -150,6 +153,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
               WHERE customer_usage_snapshot."sfid" = '${asset.sfid}' AND "createddate" = '${today}'
             `;
       const results_snapshot = await internaldb.query(query_snapshot);
+      if (DEBUG === 'true'){console.log("results_snapshot: ",results_snapshot)}
 
       if(results_snapshot.rows < 1){
         const query_insertSnapshot = `
@@ -180,6 +184,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
               )
           `;
         const results_insertSnapshot = await internaldb.query(query_insertSnapshot);
+        if (DEBUG === 'true'){console.log("results_insertSnapshot: ",results_insertSnapshot)}
 
         console.log("Update successful for snapshot record for ",asset.sfid);
 
@@ -202,6 +207,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
         [tableValues.total, today2, asset.sfid]
       );
       const results_asset = await internaldb.query(update_asset);  
+      if (DEBUG === 'true'){console.log("results_asset: ",results_asset)}
 
       console.log("Update successful for asset record for ",asset.sfid);
 
