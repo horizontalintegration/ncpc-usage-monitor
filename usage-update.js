@@ -98,6 +98,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
         leads: Number(leads.rows[0].count),
         campaignmembers: Number(campaignmembers.rows[0].count),
         subscriptions: Number(subscriptions.rows[0].count),
+        interests: Number(interests.rows[0].count),
         summary: Number(summary.rows[0].count),
         result: Number(result.rows[0].count),
         total: totalUsage
@@ -117,11 +118,20 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
   
   const updateCustomerUsage = async function (asset, tableValues){
     try{
-      const update_customerUsage = await internaldb.query(
-          "UPDATE public.customer_usage SET contact_table=$1, lead_table=$2, subscription_table=$3, interest_table=$4, campaignmember_table=$5, summary_table=$6, result_table=$7 total_usage=$8 WHERE sfid=$9 RETURNING *",
-          [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, asset.sfid]
-      );
-      const results_customerUsage = await internaldb.query(update_customerUsage);
+      const query_customerUsage = `
+          UPDATE public.customer_usage SET 
+            contact_table=$1, 
+            lead_table=$2, 
+            subscription_table=$3, 
+            interest_table=$4, 
+            campaignmember_table=$5, 
+            summary_table=$6, 
+            result_table=$7 
+            total_usage=$8 
+          WHERE sfid=$9 RETURNING *`;
+      
+      const queryparams = [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, asset.sfid];    
+      const results_customerUsage = await internaldb.query(query_customerUsage,queryparams);
 
       if(results_customerUsage.rows){updateAssetUsage(asset, tableValues);}
       console.log("DEBUG updateCustomerUsage ",results_customerUsage);
