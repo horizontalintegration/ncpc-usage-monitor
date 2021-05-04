@@ -20,27 +20,10 @@ const getAssetRecords = async function (){
               WHERE assetsfid = '${asset.rows[i].sfid}'
             `;
             const results_customerRecord = await internaldb.query(customerRecord);
+            console.log("results_customerRecord: ", results_customerRecord)
 
             customerId = results_customerRecord.rows[0].id;
-
-            const { Client } = require('pg');
-
-            let connString;
-            if (customerDetails.dbUrl in process.env) {
-              connString = process.env[customerDetails.dbUrl];
-            }
-
-            const options = {
-              connectionString: connString,
-            };
-
-            if (process.env.DATABASE_SSL === undefined || process.env.DATABASE_SSL.toLowerCase() === 'true') {
-              options.ssl = true;
-            }
-
-            const db = new Client(options);
-
-            db.connect();
+            console.log("customerId: ", customerId);
 
             if(results_customerRecord.rows.length == 0){
               // insert new customer record with details from the asset record
@@ -56,13 +39,13 @@ const getAssetRecords = async function (){
                 VALUES 
                 [${asset.rows[i].sfid}, ${asset.rows[i].schema_name__c}, '', ${asset.rows[i].schema_name__c}, ${asset.rows[i].accountid}, ${asset.rows[i].sfid}]
               `;
-              const results_insertCustomer = await db.internaldb.query(query_insertCustomer);
+              const results_insertCustomer = await internaldb.query(query_insertCustomer);
 
               customerId = results_insertCustomer.rows[0].id;
             }
 
             if(customerId){
-              pullCustomerUsage(asset.rows[i], customerId, db);
+              pullCustomerUsage(asset.rows[i], customerId);
             }
           }
           console.log("All updates made.");
@@ -75,30 +58,49 @@ const getAssetRecords = async function (){
   }
 }
 
-const pullCustomerUsage = async function (asset, customerId, db) {
+const pullCustomerUsage = async function (asset, customerId) {
     try{
+      const { Client } = require('pg');
 
-        // query db and schema for usage information
-        const contacts = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".contact");
-        const leads = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".lead");
-        const campaignmembers = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".campaignmember");
-        const subscriptions = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_subscription__c");
-        const interests = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_interest__c");
-        const summary = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_summary__c");
-        const result = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_result__c");
+      let connString;
+      if (customerDetails.dbUrl in process.env) {
+        connString = process.env[customerDetails.dbUrl];
+      }
 
-        const totalUsage = Number(subscriptions.rows[0].count) + Number(interests.rows[0].count) + Number(contacts.rows[0].count) + Number(leads.rows[0].count) + Number(campaignmembers.rows[0].count) + Number(summary.rows[0].count) + Number(result.rows[0].count);
-        console.log("Total Usage "+JSON.stringify(totalUsage));
+      const options = {
+        connectionString: connString,
+      };
 
-        const tableValues = {
-          "contacts": Number(contacts.rows[0].count), 
-          "leads": Number(contacts.rows[0].count),
-          "campaignmembers": Number(campaignmembers.rows[0].count),
-          "subscriptions": Number(subscriptions.rows[0].count),
-          "summary": Number(summary.rows[0].count),
-          "result": Number(results.rows[0].count),
-          "total": totalUsage
-        };
+      if (process.env.DATABASE_SSL === undefined || process.env.DATABASE_SSL.toLowerCase() === 'true') {
+        options.ssl = true;
+      }
+
+      const db = new Client(options);
+
+      db.connect();
+      console.log("db connection: ", db);
+
+      // query db and schema for usage information
+      const contacts = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".contact");
+      const leads = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".lead");
+      const campaignmembers = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".campaignmember");
+      const subscriptions = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_subscription__c");
+      const interests = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_interest__c");
+      const summary = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_summary__c");
+      const result = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_result__c");
+
+      const totalUsage = Number(subscriptions.rows[0].count) + Number(interests.rows[0].count) + Number(contacts.rows[0].count) + Number(leads.rows[0].count) + Number(campaignmembers.rows[0].count) + Number(summary.rows[0].count) + Number(result.rows[0].count);
+      console.log("Total Usage "+JSON.stringify(totalUsage));
+
+      const tableValues = {
+        "contacts": Number(contacts.rows[0].count), 
+        "leads": Number(contacts.rows[0].count),
+        "campaignmembers": Number(campaignmembers.rows[0].count),
+        "subscriptions": Number(subscriptions.rows[0].count),
+        "summary": Number(summary.rows[0].count),
+        "result": Number(results.rows[0].count),
+        "total": totalUsage
+      };
       
       //console.log("Subscriptions Count - "+asset.schema_name__c+" - "+JSON.stringify(subscriptions.rows[0].count));
   
