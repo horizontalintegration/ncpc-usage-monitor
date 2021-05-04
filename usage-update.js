@@ -49,7 +49,8 @@ const getAssetRecords = async function (){
           }
           console.log("All updates made.");
           setTimeout((function() {
-              return process.exit(22);
+            internaldb.end();  
+            return process.exit(22);
           }), 15000);
       }
   } catch (err){
@@ -89,6 +90,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
       const totalUsage = Number(subscriptions.rows[0].count) + Number(interests.rows[0].count) + Number(contacts.rows[0].count) + Number(leads.rows[0].count) + Number(campaignmembers.rows[0].count) + Number(summary.rows[0].count) + Number(result.rows[0].count);
       console.log("Total Usage "+JSON.stringify(totalUsage));
+
+      db.end();
 
       const tableValues = {
         contacts: Number(contacts.rows[0].count), 
