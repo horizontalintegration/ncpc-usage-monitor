@@ -102,21 +102,23 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
         "result": Number(results.rows[0].count),
         "total": totalUsage
       };
+
+      console.log("TableValues: ", tableValues);
       
       //console.log("Subscriptions Count - "+asset.schema_name__c+" - "+JSON.stringify(subscriptions.rows[0].count));
   
-      const updateCustomer = updateCustomerUsage(asset, tableValues, db);
-      const insertCustomerSnapshot = insertCustomerUsageSnapshot(asset, tableValues, db);
+      const updateCustomer = updateCustomerUsage(asset, tableValues);
+      const insertCustomerSnapshot = insertCustomerUsageSnapshot(asset, tableValues);
       
     }catch(err){
       console.log("Error in pullCustomerUsage: "+JSON.stringify(err));
     }
   }
   
-  const updateCustomerUsage = async function (asset, tableValues, db){
+  const updateCustomerUsage = async function (asset, tableValues){
     try{
       const update_customerUsage = await internaldb.query(
-          "UPDATE ncpc_usage.customer_usage SET contact_table=$1, lead_table=$2, subscription_table=$3, interest_table=$4, campaignmember_table=$5, summary_table=$6, result_table=$7 total_usage=$8 WHERE sfid=$9 RETURNING *",
+          "UPDATE public.customer_usage SET contact_table=$1, lead_table=$2, subscription_table=$3, interest_table=$4, campaignmember_table=$5, summary_table=$6, result_table=$7 total_usage=$8 WHERE sfid=$9 RETURNING *",
           [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, asset.sfid]
       );
       const results_customerUsage = await internaldb.query(update_customerUsage);
@@ -128,7 +130,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
     }
   }
 
-  const insertCustomerUsageSnapshot = async function (asset, tableValues, db){
+  const insertCustomerUsageSnapshot = async function (asset, tableValues){
     try{
       const query_insertSnapshot = `
           INSERT INTO 
