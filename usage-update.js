@@ -21,8 +21,6 @@ const getAssetRecords = async function (){
             const results_customerRecord = await internaldb.query(customerRecord);
             if (DEBUG === 'true'){console.log("results_customerRecord: ",results_customerRecord)}
 
-            customerId = results_customerRecord.rows[0].id;
-
             if(results_customerRecord.rows.length == 0){
               // insert new customer record with details from the asset record
               const query_insertCustomer = `
@@ -41,6 +39,8 @@ const getAssetRecords = async function (){
               if (DEBUG === 'true'){console.log("results_insertCustomer: ",results_insertCustomer)}
 
               customerId = results_insertCustomer.rows[0].id;
+            }else{
+              customerId = results_customerRecord.rows[0].id;
             }
 
             if(customerId){
