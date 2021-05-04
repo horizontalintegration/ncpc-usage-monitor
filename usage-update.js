@@ -126,9 +126,10 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
             "interest_table"=$4, 
             "campaignmember_table"=$5, 
             "summary_table"=$6, 
-            "result_table"=$7 
+            "result_table"=$7, 
             "total_usage"=$8 
-          WHERE "sfid"=$9`;
+          WHERE "sfid"=$9
+      `;
       
       const queryparams = [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, asset.sfid];    
       const results_customerUsage = await internaldb.query(query_customerUsage,queryparams);
