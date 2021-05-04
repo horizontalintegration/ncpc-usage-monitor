@@ -132,6 +132,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       
       const queryparams = [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, asset.sfid];    
       const results_customerUsage = await internaldb.query(query_customerUsage,queryparams);
+      console.log("results_customerUsage: ", results_customerUsage);
 
       if(results_customerUsage.rows){updateAssetUsage(asset, tableValues);}
       console.log("DEBUG updateCustomerUsage ",results_customerUsage);
