@@ -26,12 +26,12 @@ const getAssetRecords = async function (){
               const query_insertCustomer = `
                 INSERT INTO 
                 public.customer (
-                  clientId,
-                  clientName,
+                  clientid,
+                  clientname,
                   dbURL,
-                  clientSchema,
-                  sfAccountName,
-                  assetId)
+                  clientschema,
+                  sfaccountname,
+                  assetid)
                 VALUES 
                 (
                   '${asset.rows[i].sfid}', 
