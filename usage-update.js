@@ -6,6 +6,7 @@ const dateFormat = require('dateformat');
 const getAssetRecords = async function (){
   try{
     console.log("start getAssetRecords");
+    console.log("databaseURL ",process.env.DATABASE_URL);
     console.log("internaldb client ",internaldb);
     const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
       console.log("Asset "+JSON.stringify(asset.rows));
