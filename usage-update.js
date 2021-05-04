@@ -4,6 +4,7 @@ const dateFormat = require('dateformat');
 
 
 const getAssetRecords = async function (){
+  try{
     const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
       console.log("Asset "+JSON.stringify(asset.rows));
 
@@ -66,6 +67,9 @@ const getAssetRecords = async function (){
               return process.exit(22);
           }), 15000);
       }
+  } catch (err){
+    console.log("Error  "+JSON.stringify(err));
+  }
 }
 
 const pullCustomerUsage = async function (asset, customerId, db) {
