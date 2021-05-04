@@ -159,16 +159,16 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
             "total_usage")
           VALUES 
             (
-            ${asset.sfid}, 
-            ${asset.schema_name__c}, 
-            ${tableValues.subscriptions}, 
-            ${tableValues.interests}, 
-            ${tableValues.contacts}, 
-            ${tableValues.leads}, 
-            ${tableValues.campaignmembers}, 
-            ${tableValues.summary}, 
-            ${tableValues.result}, 
-            ${tableValues.total}
+            '${asset.sfid}', 
+            '${asset.schema_name__c}', 
+            '${tableValues.subscriptions}', 
+            '${tableValues.interests}', 
+            '${tableValues.contacts}', 
+            '${tableValues.leads}', 
+            '${tableValues.campaignmembers}', 
+            '${tableValues.summary}', 
+            '${tableValues.result}', 
+            '${tableValues.total}'
             )
         `;
       const results_insertSnapshot = await internaldb.query(query_insertSnapshot);
