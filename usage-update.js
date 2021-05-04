@@ -41,6 +41,8 @@ const getAssetRecords = async function (){
 
             if(customerId){
               pullCustomerUsage(asset.rows[i], results_customerRecord.dbUrl, customerId);
+
+              if(pullCustomerUsage){return true};
             }
           }
           console.log("All updates made.");
@@ -101,6 +103,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       
       const updateCustomer = updateCustomerUsage(asset, tableValues);
       const insertCustomerSnapshot = insertCustomerUsageSnapshot(asset, tableValues);
+
+      if(updateCustomer && insertCustomerSnapshot){return true};
       
     }catch(err){
       console.log("Error in pullCustomerUsage: ",err);
@@ -127,7 +131,11 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
       console.log("Update successful for customer_usage record for ",asset.sfid);
 
-      if(results_customerUsage.rows){updateAssetUsage(asset, tableValues);}
+      if(results_customerUsage.rows){
+        const updateAsset = updateAssetUsage(asset, tableValues);
+        if(updateAsset){return true};
+      }
+
     }catch(err){
       console.log("Error in updateCustomerUsage: "+JSON.stringify(err));
     }
@@ -174,6 +182,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
         const results_insertSnapshot = await internaldb.query(query_insertSnapshot);
 
         console.log("Update successful for snapshot record for ",asset.sfid);
+
+        if(results_insertSnapshot){return true};
       }else{
         console.log("Snapshot record not created, record already existing for customer and date.")
       }
@@ -193,6 +203,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       const results_asset = await internaldb.query(update_asset);  
 
       console.log("Update successful for asset record for ",asset.sfid);
+
+      if(results_asset){return true};
     }catch(err){
       console.log("Error in updateAssetUsage: "+JSON.stringify(err));
     } 
