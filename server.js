@@ -19,7 +19,7 @@ app.get('/', async function(req, res, next) {
   try {
     //var dbConn = db.internaldb;
     //console.log("dbConn " + JSON.stringify(dbConn));
-
+    console.log("WHY");
     const asset = await db.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
     console.log("Asset "+JSON.stringify(asset.rows));
 
