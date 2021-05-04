@@ -32,15 +32,15 @@ const getAssetRecords = async function (){
                   clientschema,
                   sfaccountname,
                   assetid)
-                VALUES 
-                (
+                VALUES (
                   '${asset.rows[i].sfid}', 
                   '${asset.rows[i].schema_name__c}', 
                   '', 
                   '${asset.rows[i].schema_name__c}', 
                   '${asset.rows[i].accountid}', 
-                  '${asset.rows[i].sfid}'
-                )
+                  '${asset.rows[i].sfid}')
+                RETURNING 
+                  id
               `;
               const results_insertCustomer = await internaldb.query(query_insertCustomer);
               if (DEBUG === 'true'){console.log("results_insertCustomer: ",results_insertCustomer)}
