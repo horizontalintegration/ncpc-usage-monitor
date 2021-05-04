@@ -2,12 +2,12 @@
 const { Client } = require('pg');
 const internaldb = require("./db/internal");
 const dateFormat = require('dateformat');
-let DEBUG = 'true';
+let DEBUG = 'false';
 
 
 const getAssetRecords = async function (){
   try{
-    const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True' AND sfid = '02i1H00000y7utGQAQ'");
+    const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
 
       if (asset.rows.length > 0) {
           for(var i=0; i<asset.rows.length; i++){
@@ -41,7 +41,7 @@ const getAssetRecords = async function (){
             }
 
             if(customerId){
-              const pullCustomer = pullCustomerUsage(asset.rows[i], results_customerRecord.dbUrl, customerId);
+              const pullCustomer = await pullCustomerUsage(asset.rows[i], results_customerRecord.dbUrl, customerId);
               if (DEBUG === 'true'){console.log("pullCustomer: ",pullCustomer)}
 
               if(pullCustomer){return true};
@@ -103,8 +103,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
       console.log("TableValues: ", tableValues);
       
-      const updateCustomer = updateCustomerUsage(asset, tableValues);
-      const insertCustomerSnapshot = insertCustomerUsageSnapshot(asset, tableValues);
+      const updateCustomer = await updateCustomerUsage(asset, tableValues);
+      const insertCustomerSnapshot = await insertCustomerUsageSnapshot(asset, tableValues);
 
       if(updateCustomer && insertCustomerSnapshot){return true};
       
@@ -137,7 +137,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       console.log("Update successful for customer_usage record for ",asset.sfid);
 
       if(results_customerUsage.rows){
-        const updateAsset = updateAssetUsage(asset, tableValues);
+        const updateAsset = await updateAssetUsage(asset, tableValues);
         if(updateAsset){return true};
       }
 
@@ -194,7 +194,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
         if(results_insertSnapshot){return true};
       }else{
-        console.log("Snapshot record not created, record already existing for customer and date.");
+        console.log("Snapshot record not created, record already existing for customer and date.",asset.sfid);
         return true;
       }
     }catch(err){
