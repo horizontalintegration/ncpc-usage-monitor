@@ -18,7 +18,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Catch landing page so it isn't served as a static file.
 app.get('/', (req, res) => {
-  console.log("test");
+  try{
+    console.log("test");
+    res.status(200);
+  } catch (err){
+    res.status(err.status || 500).send(err);
+  }
 });
 
 
