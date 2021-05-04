@@ -8,7 +8,7 @@ const getAssetRecords = async function (){
     console.log("start getAssetRecords");
     console.log("databaseURL ",process.env.DATABASE_URL);
     console.log("internaldb client ",internaldb);
-    const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
+    const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True' AND sfid = '02i1H00000y7utGQAQ'");
       console.log("Asset "+JSON.stringify(asset.rows));
 
       if (asset.rows.length > 0) {
@@ -22,7 +22,7 @@ const getAssetRecords = async function (){
             const results_customerRecord = await internaldb.query(customerRecord);
             console.log("results_customerRecord: ", results_customerRecord)
 
-            customerId = results_customerRecord.rows[0].id;
+            let customerId = results_customerRecord.rows[i].id;
             console.log("customerId: ", customerId);
 
             if(results_customerRecord.rows.length == 0){
