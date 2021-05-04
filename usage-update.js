@@ -147,18 +147,29 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       const query_insertSnapshot = `
           INSERT INTO 
           public.customer_usage_snapshot (
-            sfid,
-            name,
-            subscription_table,
-            interest_table,
-            contact_table,
-            lead_table,
-            campaignmember_table,
-            summary_table,
-            result_table,
-            total_usage)
+            "sfid",
+            "name",
+            "subscription_table",
+            "interest_table",
+            "contact_table",
+            "lead_table",
+            "campaignmember_table",
+            "summary_table",
+            "result_table",
+            "total_usage")
           VALUES 
-          (${asset.sfid}, ${asset.schema_name__c}, ${tableValues.subscriptions}, ${tableValues.interests}, ${tableValues.contacts}, ${tableValues.leads}, ${tableValues.campaignmembers}, ${tableValues.summary}, ${tableValues.result}, ${tableValues.total})
+            (
+            ${asset.sfid}, 
+            ${asset.schema_name__c}, 
+            ${tableValues.subscriptions}, 
+            ${tableValues.interests}, 
+            ${tableValues.contacts}, 
+            ${tableValues.leads}, 
+            ${tableValues.campaignmembers}, 
+            ${tableValues.summary}, 
+            ${tableValues.result}, 
+            ${tableValues.total}
+            )
         `;
       const results_insertSnapshot = await internaldb.query(query_insertSnapshot);
       console.log("DEBUG insertCustomerUsageSnapshot ",results_insertSnapshot);
