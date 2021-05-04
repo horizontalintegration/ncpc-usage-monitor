@@ -64,6 +64,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       let connString;
       if (dbUrl in process.env) {
         connString = process.env[dbUrl];
+      }else{
+        connString = 'postgres://u8abtc187h14lj:pdd45f5983896cccea970dbea9b7c2be60a12bfbdabf6cb4ac61d9071b76da1f1@ec2-52-21-77-248.compute-1.amazonaws.com:5432/d4dpqs4699s6cg';
       }
 
       const options = {
