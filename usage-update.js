@@ -120,15 +120,15 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
     try{
       const query_customerUsage = `
           UPDATE public.customer_usage SET 
-            contact_table=$1, 
-            lead_table=$2, 
-            subscription_table=$3, 
-            interest_table=$4, 
-            campaignmember_table=$5, 
-            summary_table=$6, 
-            result_table=$7 
-            total_usage=$8 
-          WHERE sfid=$9 RETURNING *`;
+            "contact_table"=$1, 
+            "lead_table"=$2, 
+            "subscription_table"=$3, 
+            "interest_table"=$4, 
+            "campaignmember_table"=$5, 
+            "summary_table"=$6, 
+            "result_table"=$7 
+            "total_usage"=$8 
+          WHERE "sfid"=$9`;
       
       const queryparams = [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, asset.sfid];    
       const results_customerUsage = await internaldb.query(query_customerUsage,queryparams);
