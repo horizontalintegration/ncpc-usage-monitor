@@ -6,11 +6,7 @@ const dateFormat = require('dateformat');
 
 const getAssetRecords = async function (){
   try{
-    console.log("start getAssetRecords");
-    console.log("databaseURL ",process.env.DATABASE_URL);
-    console.log("internaldb client ",internaldb);
     const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True' AND sfid = '02i1H00000y7utGQAQ'");
-      console.log("Asset "+JSON.stringify(asset.rows));
 
       if (asset.rows.length > 0) {
           for(var i=0; i<asset.rows.length; i++){
@@ -21,10 +17,8 @@ const getAssetRecords = async function (){
               WHERE customer."assetId" = '${asset.rows[i].sfid}'
             `;
             const results_customerRecord = await internaldb.query(customerRecord);
-            console.log("results_customerRecord: ", results_customerRecord)
 
             customerId = results_customerRecord.rows[0].id;
-            console.log("customerId: ", customerId);
 
             if(results_customerRecord.rows.length == 0){
               // insert new customer record with details from the asset record
@@ -79,7 +73,6 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       const db = new Client(options);
 
       db.connect();
-      console.log("db connection: ", db);
 
       // query db and schema for usage information
       const contacts = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".contact");
@@ -106,8 +99,6 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
       console.log("TableValues: ", tableValues);
       
-      //console.log("Subscriptions Count - "+asset.schema_name__c+" - "+JSON.stringify(subscriptions.rows[0].count));
-  
       const updateCustomer = updateCustomerUsage(asset, tableValues);
       const insertCustomerSnapshot = insertCustomerUsageSnapshot(asset, tableValues);
       
@@ -133,10 +124,10 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       
       const queryparams = [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, asset.sfid];    
       const results_customerUsage = await internaldb.query(query_customerUsage,queryparams);
-      console.log("results_customerUsage: ", results_customerUsage);
+
+      console.log("Update successful for customer_usage record for ",asset.sfid);
 
       if(results_customerUsage.rows){updateAssetUsage(asset, tableValues);}
-      console.log("DEBUG updateCustomerUsage ",results_customerUsage);
     }catch(err){
       console.log("Error in updateCustomerUsage: "+JSON.stringify(err));
     }
@@ -144,35 +135,48 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
   const insertCustomerUsageSnapshot = async function (asset, tableValues){
     try{
-      const query_insertSnapshot = `
-          INSERT INTO 
-          public.customer_usage_snapshot (
-            "sfid",
-            "name",
-            "subscription_table",
-            "interest_table",
-            "contact_table",
-            "lead_table",
-            "campaignmember_table",
-            "summary_table",
-            "result_table",
-            "total_usage")
-          VALUES 
-            (
-            '${asset.sfid}', 
-            '${asset.schema_name__c}', 
-            '${tableValues.subscriptions}', 
-            '${tableValues.interests}', 
-            '${tableValues.contacts}', 
-            '${tableValues.leads}', 
-            '${tableValues.campaignmembers}', 
-            '${tableValues.summary}', 
-            '${tableValues.result}', 
-            '${tableValues.total}'
-            )
-        `;
-      const results_insertSnapshot = await internaldb.query(query_insertSnapshot);
-      console.log("DEBUG insertCustomerUsageSnapshot ",results_insertSnapshot);
+      var today = dateFormat(new Date(), "yyyy-mm-dd");
+      const query_snapshot = `
+              SELECT *
+              FROM public.customer_usage_snapshot
+              WHERE customer_usage_snapshot."sfid" = '${asset.sfid}' AND "createddate" = '${today}'
+            `;
+      const results_snapshot = await internaldb.query(query_snapshot);
+
+      if(results_snapshot < 1){
+        const query_insertSnapshot = `
+            INSERT INTO 
+            public.customer_usage_snapshot (
+              "sfid",
+              "name",
+              "subscription_table",
+              "interest_table",
+              "contact_table",
+              "lead_table",
+              "campaignmember_table",
+              "summary_table",
+              "result_table",
+              "total_usage")
+            VALUES 
+              (
+              '${asset.sfid}', 
+              '${asset.schema_name__c}', 
+              '${tableValues.subscriptions}', 
+              '${tableValues.interests}', 
+              '${tableValues.contacts}', 
+              '${tableValues.leads}', 
+              '${tableValues.campaignmembers}', 
+              '${tableValues.summary}', 
+              '${tableValues.result}', 
+              '${tableValues.total}'
+              )
+          `;
+        const results_insertSnapshot = await internaldb.query(query_insertSnapshot);
+
+        console.log("Update successful for snapshot record for ",asset.sfid);
+      }else{
+        console.log("Snapshot record not created, record already existing for customer and date.")
+      }
     }catch(err){
       console.log("Error in insertCustomerUsageSnapshot: "+JSON.stringify(err));
     }
@@ -188,7 +192,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       );
       const results_asset = await internaldb.query(update_asset);  
 
-      console.log("DEBUG updateCustomerUsage ",results_asset);
+      console.log("Update successful for asset record for ",asset.sfid);
     }catch(err){
       console.log("Error in updateAssetUsage: "+JSON.stringify(err));
     } 
