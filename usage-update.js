@@ -2,7 +2,7 @@
 const { Client } = require('pg');
 const internaldb = require("./db/internal");
 const dateFormat = require('dateformat');
-let DEBUG = 'false';
+let DEBUG = 'true';
 
 
 const getAssetRecords = async function (){
