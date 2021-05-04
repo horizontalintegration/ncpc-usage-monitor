@@ -8,6 +8,7 @@ let DEBUG = 'true';
 const getAssetRecords = async function (){
   try{
     const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
+    if (DEBUG === 'true'){console.log("asset: ",asset)}
 
       if (asset.rows.length > 0) {
           for(var i=0; i<asset.rows.length; i++){
@@ -18,6 +19,7 @@ const getAssetRecords = async function (){
               WHERE customer."assetId" = '${asset.rows[i].sfid}'
             `;
             const results_customerRecord = await internaldb.query(customerRecord);
+            if (DEBUG === 'true'){console.log("results_customerRecord: ",results_customerRecord)}
 
             customerId = results_customerRecord.rows[0].id;
 
@@ -36,6 +38,7 @@ const getAssetRecords = async function (){
                 [${asset.rows[i].sfid}, ${asset.rows[i].schema_name__c}, '', ${asset.rows[i].schema_name__c}, ${asset.rows[i].accountid}, ${asset.rows[i].sfid}]
               `;
               const results_insertCustomer = await internaldb.query(query_insertCustomer);
+              if (DEBUG === 'true'){console.log("results_insertCustomer: ",results_insertCustomer)}
 
               customerId = results_insertCustomer.rows[0].id;
             }
@@ -54,7 +57,7 @@ const getAssetRecords = async function (){
           }), 15000);
       }
   } catch (err){
-    console.log("Error in getAssetRecords: "+JSON.stringify(err));
+    console.log("Error in getAssetRecords: ",err);
   }
 }
 
