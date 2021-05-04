@@ -71,7 +71,7 @@ const getAssetRecords = async function (){
           }), 15000);
       }
   } catch (err){
-    console.log("Error  "+JSON.stringify(err));
+    console.log("Error in getAssetRecords: "+JSON.stringify(err));
   }
 }
 
@@ -106,7 +106,7 @@ const pullCustomerUsage = async function (asset, customerId, db) {
       const insertCustomerSnapshot = insertCustomerUsageSnapshot(asset, tableValues, db);
       
     }catch(err){
-      console.log("Error  "+JSON.stringify(err));
+      console.log("Error in pullCustomerUsage: "+JSON.stringify(err));
     }
   }
   
@@ -121,7 +121,7 @@ const pullCustomerUsage = async function (asset, customerId, db) {
       if(results_customerUsage.rows){updateAssetUsage(asset, tableValues);}
       console.log("DEBUG updateCustomerUsage ",results_customerUsage);
     }catch(err){
-      console.log("Error  "+JSON.stringify(err));
+      console.log("Error in updateCustomerUsage: "+JSON.stringify(err));
     }
   }
 
@@ -146,7 +146,7 @@ const pullCustomerUsage = async function (asset, customerId, db) {
       const results_insertSnapshot = await internaldb.query(query_insertSnapshot);
       console.log("DEBUG insertCustomerUsageSnapshot ",results_insertSnapshot);
     }catch(err){
-      console.log("Error  "+JSON.stringify(err));
+      console.log("Error in insertCustomerUsageSnapshot: "+JSON.stringify(err));
     }
   }
 
@@ -162,7 +162,7 @@ const pullCustomerUsage = async function (asset, customerId, db) {
 
       console.log("DEBUG updateCustomerUsage ",results_asset);
     }catch(err){
-      console.log("Error  "+JSON.stringify(err));
+      console.log("Error in updateAssetUsage: "+JSON.stringify(err));
     } 
   }
 
