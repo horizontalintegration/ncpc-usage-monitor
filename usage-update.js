@@ -95,11 +95,11 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
       const tableValues = {
         contacts: Number(contacts.rows[0].count), 
-        leads: Number(contacts.rows[0].count),
+        leads: Number(leads.rows[0].count),
         campaignmembers: Number(campaignmembers.rows[0].count),
         subscriptions: Number(subscriptions.rows[0].count),
         summary: Number(summary.rows[0].count),
-        result: Number(results.rows[0].count),
+        result: Number(result.rows[0].count),
         total: totalUsage
       };
 
@@ -111,7 +111,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       const insertCustomerSnapshot = insertCustomerUsageSnapshot(asset, tableValues);
       
     }catch(err){
-      console.log("Error in pullCustomerUsage: "+JSON.stringify(err));
+      console.log("Error in pullCustomerUsage: ",err);
     }
   }
   
