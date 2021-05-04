@@ -16,7 +16,7 @@ const getAssetRecords = async function (){
             const customerRecord = `
               SELECT *
               FROM public.customer
-              WHERE customer."assetId" = '${asset.rows[i].sfid}'
+              WHERE customer."assetid" = '${asset.rows[i].sfid}'
             `;
             const results_customerRecord = await internaldb.query(customerRecord);
             if (DEBUG === 'true'){console.log("results_customerRecord: ",results_customerRecord)}
