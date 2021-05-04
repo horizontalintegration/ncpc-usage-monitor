@@ -33,7 +33,14 @@ const getAssetRecords = async function (){
                   sfAccountName,
                   assetId)
                 VALUES 
-                [${asset.rows[i].sfid}, ${asset.rows[i].schema_name__c}, '', ${asset.rows[i].schema_name__c}, ${asset.rows[i].accountid}, ${asset.rows[i].sfid}]
+                (
+                  ${asset.rows[i].sfid}, 
+                  ${asset.rows[i].schema_name__c}, 
+                  '', 
+                  ${asset.rows[i].schema_name__c}, 
+                  ${asset.rows[i].accountid}, 
+                  ${asset.rows[i].sfid}
+                )
               `;
               const results_insertCustomer = await internaldb.query(query_insertCustomer);
               if (DEBUG === 'true'){console.log("results_insertCustomer: ",results_insertCustomer)}
