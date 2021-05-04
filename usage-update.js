@@ -151,7 +151,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
             `;
       const results_snapshot = await internaldb.query(query_snapshot);
 
-      if(results_snapshot < 1){
+      if(results_snapshot.rows < 1){
         const query_insertSnapshot = `
             INSERT INTO 
             public.customer_usage_snapshot (
