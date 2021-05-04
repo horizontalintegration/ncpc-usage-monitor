@@ -194,11 +194,11 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
   const updateAssetUsage = async function (asset, tableValues){
     try{
-      var today = dateFormat(new Date(), "yyyy-mm-dd");
+      var today2 = dateFormat(new Date(), "yyyy-mm-dd");
 
       const update_asset = internaldb.query(
         "UPDATE horizontal.asset SET current_volume__c=$1, usage_updated_date__c=$2 WHERE sfid=$3 RETURNING *",
-        [tableValues.total, today, asset.sfid]
+        [tableValues.total, today2, asset.sfid]
       );
       const results_asset = await internaldb.query(update_asset);  
 
