@@ -7,6 +7,7 @@ let DEBUG = 'true';
 
 const getAssetRecords = async function (){
   try{
+    if (DEBUG === 'true'){console.log("process.env.DATABASE_URL: ",process.env.DATABASE_URL)}
     const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
     if (DEBUG === 'true'){console.log("asset: ",asset)}
 
@@ -51,6 +52,7 @@ const getAssetRecords = async function (){
             }
 
             if(customerId){
+              if (DEBUG === 'true'){console.log("Customer DB URL: ",results_customerRecord.dbUrl)}
               const pullCustomer = await pullCustomerUsage(asset.rows[i], results_customerRecord.dbUrl, customerId);
               if (DEBUG === 'true'){console.log("pullCustomer: ",pullCustomer)}
 
