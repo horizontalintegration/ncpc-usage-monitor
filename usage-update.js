@@ -1,14 +1,17 @@
+require('dotenv').config();
 //const db = require("./db");
 const { Client } = require('pg');
 const internaldb = require("./db/internal");
 const dateFormat = require('dateformat');
-let DEBUG = 'true';
+let DEBUG = process.env.DEBUG;
 
 
 const getAssetRecords = async function (){
   try{
-    const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True'");
-    if (DEBUG === 'true'){console.log("asset: ",asset)}
+    if (DEBUG === 'h'){console.log("DEBUG [high] process.env.DATABASE_URL: ",process.env.DATABASE_URL)}
+    const asset = await internaldb.query("SELECT * FROM horizontal.asset WHERE active__c = 'True' AND sfid != '02i1H00000y73Y1QAI'");
+    if (DEBUG === 'h'){console.log("DEBUG [high] asset: ",asset)}
+    if (DEBUG === 'm'){console.log("DEBUG [medium] asset rows: ",asset.rows)}
 
       if (asset.rows.length > 0) {
           for(var i=0; i<asset.rows.length; i++){
@@ -19,7 +22,8 @@ const getAssetRecords = async function (){
               WHERE customer."assetid" = '${asset.rows[i].sfid}'
             `;
             const results_customerRecord = await internaldb.query(customerRecord);
-            if (DEBUG === 'true'){console.log("results_customerRecord: ",results_customerRecord)}
+            if (DEBUG === 'h'){console.log("DEBUG [high] results_customerRecord: ",results_customerRecord)}
+            if (DEBUG === 'm'){console.log("DEBUG [medium] results_customerRecord: ",results_customerRecord.rows)}
 
             if(results_customerRecord.rows.length == 0){
               // insert new customer record with details from the asset record
@@ -28,7 +32,7 @@ const getAssetRecords = async function (){
                 public.customer (
                   clientid,
                   clientname,
-                  dbURL,
+                  dburl,
                   clientschema,
                   sfaccountname,
                   assetid)
@@ -43,21 +47,24 @@ const getAssetRecords = async function (){
                   id
               `;
               const results_insertCustomer = await internaldb.query(query_insertCustomer);
-              if (DEBUG === 'true'){console.log("results_insertCustomer: ",results_insertCustomer)}
+              if (DEBUG === 'h'){console.log("DEBUG [high] results_insertCustomer: ",results_insertCustomer)}
+              if (DEBUG === 'm'){console.log("DEBUG [medium] results_insertCustomer: ",results_insertCustomer.rows)}
 
               customerId = results_insertCustomer.rows[0].id;
             }else{
               customerId = results_customerRecord.rows[0].id;
+              if (DEBUG === 'm'){console.log("DEBUG [medium] customerId: ",customerId)}
             }
 
             if(customerId){
-              const pullCustomer = await pullCustomerUsage(asset.rows[i], results_customerRecord.dbUrl, customerId);
-              if (DEBUG === 'true'){console.log("pullCustomer: ",pullCustomer)}
+              if (DEBUG === 'h'){console.log("DEBUG [high] Customer DB URL: ",results_customerRecord.rows[0].dburl)}
+              const pullCustomer = await pullCustomerUsage(asset.rows[i], results_customerRecord.rows[0].dburl, customerId);
+              if (DEBUG === 'h'){console.log("DEBUG [medium] pullCustomer: ",pullCustomer)}
 
               if(pullCustomer){return true};
             }
           }
-          console.log("All updates made.");
+          console.log("DEBUG [low] All updates made.");
           setTimeout((function() {
             internaldb.end();  
             return process.exit(22);
@@ -68,13 +75,12 @@ const getAssetRecords = async function (){
   }
 }
 
-const pullCustomerUsage = async function (asset, dbUrl, customerId) {
+const pullCustomerUsage = async function (asset, dburl, customerId) {
     try{
       let connString;
-      if (dbUrl in process.env) {
-        connString = process.env[dbUrl];
-      }else{
-        connString = 'postgres://u8abtc187h14lj:pdd45f5983896cccea970dbea9b7c2be60a12bfbdabf6cb4ac61d9071b76da1f1@ec2-52-21-77-248.compute-1.amazonaws.com:5432/d4dpqs4699s6cg';
+      if (dburl in process.env) {
+        connString = process.env[dburl];
+        if (DEBUG === 'h' || DEBUG === 'm'){console.log("DEBUG [high] connString: ",connString)}
       }
 
       const options = {
@@ -91,6 +97,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
 
       // query db and schema for usage information
       const contacts = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".contact");
+      if (DEBUG === 'h' || DEBUG === 'm'){console.log("DEBUG [high] contact rows : ",contacts.rows)}
       const leads = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".lead");
       const campaignmembers = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".campaignmember");
       const subscriptions = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_subscription__c");
@@ -99,7 +106,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
       const result = await db.query("SELECT count(*) FROM "+asset.schema_name__c+".ncpc__pc_result__c");
 
       const totalUsage = Number(subscriptions.rows[0].count) + Number(interests.rows[0].count) + Number(contacts.rows[0].count) + Number(leads.rows[0].count) + Number(campaignmembers.rows[0].count) + Number(summary.rows[0].count) + Number(result.rows[0].count);
-      console.log("Total Usage "+JSON.stringify(totalUsage));
+
+      if (DEBUG === 'h' || DEBUG === 'm'){console.log("DEBUG [high] totalUsage: ",totalUsage)}
 
       db.end();
 
@@ -114,7 +122,7 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
         total: totalUsage
       };
 
-      console.log("TableValues: ", tableValues);
+      if (DEBUG === 'h' || DEBUG === 'm'){console.log("DEBUG [high] TableValues: ",tableValues)}
       
       const updateCustomer = await updateCustomerUsage(asset, tableValues);
       const insertCustomerSnapshot = await insertCustomerUsageSnapshot(asset, tableValues);
@@ -129,7 +137,17 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
   const updateCustomerUsage = async function (asset, tableValues){
     try{
       var today = dateFormat(new Date(), "yyyy-mm-dd");
-      const query_customerUsage = `
+      const query_usage = `
+              SELECT *
+              FROM public.customer_usage
+              WHERE customer_usage."sfid" = '${asset.sfid}'
+            `;
+      const results_usage = await internaldb.query(query_usage);
+      if (DEBUG === 'h'){console.log("DEBUG [high] results_usage rows: ",results_usage)}
+      if (DEBUG === 'm'){console.log("DEBUG [medium] results_usage rows: ",results_usage.rows)}
+
+      if(results_usage.rows.length > 0){
+        const query_customerUsage = `
           UPDATE public.customer_usage SET 
             "contact_table"=$1, 
             "lead_table"=$2, 
@@ -139,13 +157,48 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
             "summary_table"=$6, 
             "result_table"=$7, 
             "total_usage"=$8,
-            "lastUpdatedDate"=$9 
+            "last_updated_date"=$9 
           WHERE "sfid"=$10
-      `;
+        `;
       
-      const queryparams = [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, today, asset.sfid];    
-      const results_customerUsage = await internaldb.query(query_customerUsage,queryparams);
-      if (DEBUG === 'true'){console.log("results_customerUsage: ",results_customerUsage)}
+        const queryparams = [tableValues.contacts, tableValues.leads, tableValues.subscriptions, tableValues.interests, tableValues.campaignmembers, tableValues.summary, tableValues.result, tableValues.total, today, asset.sfid];    
+        const results_customerUsage = await internaldb.query(query_customerUsage,queryparams);
+        if (DEBUG === 'h'){console.log("DEBUG [high] results_customerUsage: ",results_customerUsage)}
+        if (DEBUG === 'm'){console.log("DEBUG [medium] results_customerUsage: ",results_customerUsage.rows)}
+      }else{
+        const query_insertUsage = `
+            INSERT INTO 
+            public.customer_usage (
+              "sfid",
+              "name",
+              "subscription_table",
+              "interest_table",
+              "contact_table",
+              "lead_table",
+              "campaignmember_table",
+              "summary_table",
+              "result_table",
+              "total_usage",
+              "last_updated_date")
+            VALUES 
+              (
+              '${asset.sfid}', 
+              '${asset.schema_name__c}', 
+              '${tableValues.subscriptions}', 
+              '${tableValues.interests}', 
+              '${tableValues.contacts}', 
+              '${tableValues.leads}', 
+              '${tableValues.campaignmembers}', 
+              '${tableValues.summary}', 
+              '${tableValues.result}', 
+              '${tableValues.total}',
+              '${today}'
+              )
+          `;
+        const results_insertUsage = await internaldb.query(query_insertUsage);
+        if (DEBUG === 'h'){console.log("DEBUG [high] results_insertUsage: ",results_insertUsage)}
+        if (DEBUG === 'm'){console.log("DEBUG [medium] results_insertUsage: ",results_insertUsage.rows)}
+      }
 
       console.log("Update successful for customer_usage record for ",asset.sfid);
 
@@ -168,7 +221,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
               WHERE customer_usage_snapshot."sfid" = '${asset.sfid}' AND "createddate" = '${today}'
             `;
       const results_snapshot = await internaldb.query(query_snapshot);
-      if (DEBUG === 'true'){console.log("results_snapshot: ",results_snapshot)}
+      if (DEBUG === 'h'){console.log("DEBUG [high] results_snapshot: ",results_snapshot)}
+      if (DEBUG === 'm'){console.log("DEBUG [high] results_snapshot: ",results_snapshot.rows)}
 
       if(results_snapshot.rows < 1){
         const query_insertSnapshot = `
@@ -201,7 +255,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
               )
           `;
         const results_insertSnapshot = await internaldb.query(query_insertSnapshot);
-        if (DEBUG === 'true'){console.log("results_insertSnapshot: ",results_insertSnapshot)}
+        if (DEBUG === 'h'){console.log("DEBUG [high] results_insertSnapshot: ",results_insertSnapshot)}
+        if (DEBUG === 'm'){console.log("DEBUG [medium] results_insertSnapshot: ",results_insertSnapshot.rows)}
 
         console.log("Update successful for snapshot record for ",asset.sfid);
 
@@ -227,7 +282,8 @@ const pullCustomerUsage = async function (asset, dbUrl, customerId) {
         `;
       const queryparams = [tableValues.total, today, asset.sfid];    
       const results_asset = await internaldb.query(update_asset,queryparams);
-      if (DEBUG === 'true'){console.log("results_asset: ",results_asset)}
+      if (DEBUG === 'h'){console.log("DEBUG [high] results_asset: ",results_asset)}
+      if (DEBUG === 'm'){console.log("DEBUG [medium] results_asset: ",results_asset.rows)}
 
       console.log("Update successful for asset record for ",asset.sfid);
 
