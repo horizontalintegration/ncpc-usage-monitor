@@ -5,20 +5,21 @@ const internaldb = require("./db/internal");
 const dateFormat = require('dateformat');
 let DEBUG = process.env.DEBUG;
 
-const cleanseLogRecords = function (){
-    var twoDaysAgo = dateFormat(new Date(), "mm-dd-yyyy");
+async function cleanseLogRecords(){
+    var date = new Date();
+    var twoDaysAgo = dateFormat(date.setDate(date.getDate() - 2), "mm/dd/yyyy");
+    
     console.log("twoDaysAgo",twoDaysAgo);
 
-    // will delete all records from the database that are of status 200 
-    // successfull that happened more then 2 days ago
     const deleteLogs = `
         DELETE
         FROM public.connector_logs
         WHERE 
             connector_logs."status" = '200' AND
-            connector_logs."dateadded" < '${twoDaysAgo}'
+            connector_logs."dateadded" < '$1'
     `;
-    const results_deleteLogs = await internaldb.query(deleteLogs);
+    const parameters = [twoDaysAgo];
+    const results_deleteLogs = await internaldb.query(deleteLogs,parameters);
 
     console.log("results",results_deleteLogs);
 }
