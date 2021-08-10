@@ -6,8 +6,7 @@ const dateFormat = require('dateformat');
 let DEBUG = process.env.DEBUG;
 
 const cleanseLogRecords = async function (){
-    var date = new Date();
-    var twoDaysAgo = dateFormat(date.setDate(date.getDate() - 2), "mm-dd-yyyy");
+    var twoDaysAgo = dateFormat(new Date() - 2, "mm-dd-yyyy");
     console.log("twoDaysAgo",twoDaysAgo);
 
     // will delete all records from the database that are of status 200 
