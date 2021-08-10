@@ -5,8 +5,8 @@ const internaldb = require("./db/internal");
 const dateFormat = require('dateformat');
 let DEBUG = process.env.DEBUG;
 
-const cleanseLogRecords = async function (){
-    var twoDaysAgo = dateFormat(new Date() - 2, "mm-dd-yyyy");
+const cleanseLogRecords = function (){
+    var twoDaysAgo = dateFormat(new Date(), "mm-dd-yyyy");
     console.log("twoDaysAgo",twoDaysAgo);
 
     // will delete all records from the database that are of status 200 
